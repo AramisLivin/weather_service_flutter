@@ -20,12 +20,12 @@ class _WeatherPageState extends State<WeatherPage> {
   bool _isExpanded = false;
   final TextEditingController _cityController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  String _lastCity = 'Batumi';
+  String _lastCity = '';
 
   @override
   void initState() {
     super.initState();
-    _loadLastCity();
+    _initialize();
   }
 
   @override
@@ -35,20 +35,36 @@ class _WeatherPageState extends State<WeatherPage> {
     super.dispose();
   }
 
-  _loadLastCity() async {
+  Future<void> _initialize() async {
+    await _clearPreferences();
+    await _loadLastCity();
+    await _fetchWeather();
+  }
+
+  Future<void> _clearPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
     setState(() {
-      _lastCity = prefs.getString('lastCity') ?? 'Monaco';
-      _fetchWeather();
+      _lastCity = '';
+      _weather = null;
     });
   }
 
-  _saveLastCity(String city) async {
+  Future<void> _loadLastCity() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lastCity = prefs.getString('lastCity') ?? 'Monaco';
+    });
+  }
+
+  Future<void> _saveLastCity(String city) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('lastCity', city);
   }
 
-  _fetchWeather() async {
+  Future<void> _fetchWeather() async {
+    if (_lastCity.isEmpty) return;
+
     setState(() {
       _isLoading = true;
     });
