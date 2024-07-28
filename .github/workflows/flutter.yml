@@ -22,7 +22,7 @@ jobs:
       run: flutter pub get
 
     - name: Build the project
-      run: flutter build web --base-href $(BASE_HREF) --release
+      run: flutter build web --release
 
     - name: Update base href
       run: |
