@@ -24,6 +24,10 @@ jobs:
     - name: Build the project
       run: flutter build web --release
 
+    - name: Update base href
+      run: |
+        sed -i 's|<base href="/">|<base href="/weather_service_flutter/">|' build/web/index.html
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
